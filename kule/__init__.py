@@ -1,4 +1,5 @@
 from functools import partial
+
 from bson import ObjectId
 from pymongo import Connection
 
