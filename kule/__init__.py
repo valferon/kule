@@ -83,6 +83,7 @@ class Kule(object):
             501: partial(self.error, "Not Implemented."),
             405: partial(self.error, "Method Not Allowed."),
             403: partial(self.error, "Forbidden."),
+            400: partial(self.error, "Bad request."),
         }
 
     def dispatch_views(self):
