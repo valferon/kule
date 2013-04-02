@@ -7,43 +7,43 @@ from helpers import int_or_default, jsonify
 from bottle import Bottle, route, run, request, response, abort, error
 
 
-connection = Connection().dbpatterns
-
-
 class Kule(object):
-    def __init__(self):
-        pass
+    def __init__(self, database, host=None, port=None):
+        self.connection = self.connect(database, host, port)
+
+    def connect(self, database, host=None, port=None):
+        return Connection(host=host, port=port)[database]
 
     def get_document(self, collection, pk):
-        cursor = connection[collection]
+        cursor = self.connection[collection]
         return jsonify(cursor.find_one({
             "_id": ObjectId(pk)
         }) or abort(404))
 
     def replace_document(self, collection, pk):
-        connection[collection].update({"_id": ObjectId(pk)},
-                                      request.json)
+        self.connection[collection].update({"_id": ObjectId(pk)},
+                                           request.json)
         return jsonify(request.json)
 
     def update_document(self, collection, pk):
-        connection[collection].update({"_id": ObjectId(pk)},
-                                      {"$set": request.json})
+        self.connection[collection].update({"_id": ObjectId(pk)},
+                                           {"$set": request.json})
         response.status = 202
         return get_document(collection, pk)
 
     def remove_document(self, collection, pk):
-        connection[collection].remove({"_id": ObjectId(pk)})
+        self.connection[collection].remove({"_id": ObjectId(pk)})
         response.status = 204
 
     def post_collection(self, collection):
-        inserted = connection[collection].insert(request.json)
+        inserted = self.connection[collection].insert(request.json)
         response.status = 201
         return jsonify({"_id": inserted})
 
     def get_collection(self, collection):
         limit = int_or_default(request.query.limit, 20)
         offset = int_or_default(request.query.offset, 0)
-        cursor = connection[collection].find()
+        cursor = self.connection[collection].find()
 
         meta = {
             "limit": limit,
@@ -78,6 +78,6 @@ class Kule(object):
 
 
 if __name__ == "__main__":
-    kule = Kule()
+    kule = Kule(database="selam")
     run(app=kule.get_app(), host='localhost', port=8000,
         debug=True, reloader=True)
