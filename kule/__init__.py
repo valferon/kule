@@ -52,7 +52,7 @@ def get_collection(collection):
         "limit": limit,
         "offset": offset,
         "total_count": cursor.count(),
-        }
+    }
 
     objects = cursor.skip(offset).limit(limit)
 
@@ -75,7 +75,6 @@ kule.error_handler = {
     500: partial(error, 500, "Internal Server Error"),
     404: partial(error, 404, "Not Found"),
 }
-
 
 if __name__ == "__main__":
     run(app=kule, host='localhost', port=8000, debug=True, reloader=True)
