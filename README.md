@@ -1,3 +1,3 @@
-Simple REST Interface for MongoDB built with Bottle.
+Simple REST Interface for MongoDB.
 
 Work in progress.

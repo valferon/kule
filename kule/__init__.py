@@ -10,16 +10,15 @@ from bottle import Bottle, route, run, request, response, abort, error
 
 class Kule(object):
     def __init__(self, database=None, host=None, port=None,
-                 allowed_collections=None):
+                 collections=None):
         self.connection = self.connect(database, host, port)
-        self.allowed_collections = None
+        self.collections = collections
 
     def connect(self, database, host=None, port=None):
         return Connection(host=host, port=port)[database]
 
     def get_collection(self, collection):
-        if self.allowed_collections and collection \
-                not in self.allowed_collections:
+        if self.collections and collection not in self.collections:
             abort(403)
         return self.connection[collection]
 
@@ -93,6 +92,19 @@ class Kule(object):
             self.app.route('/:collection/:pk', method=method)(
                 getattr(self, "%s_detail" % method, self.not_implemented))
 
+            # magical views
+            for collection in self.collections or []:
+                detail_view = getattr(self, "%s_%s_detail" % (
+                    method, collection), None)
+                list_view = getattr(self, "%s_%s_list" % (
+                    method, collection), None)
+                if list_view:
+                    self.app.route('/%s' % collection, method=method)(
+                        list_view)
+                if detail_view:
+                    self.app.route('/%s/:id' % collection, method=method)(
+                        detail_view)
+
     def get_bottle_app(self):
         self.app = Bottle()
         self.dispatch_views()
@@ -108,6 +120,6 @@ class Kule(object):
 
 
 if __name__ == "__main__":
-    kule = Kule(database="selam")
+    kule = Kule(database="selam", collections=["documents"])
     run(app=kule.get_bottle_app(), host='localhost', port=8003,
         debug=True, reloader=True)
