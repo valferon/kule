@@ -4,7 +4,7 @@ from functools import partial
 from bson import ObjectId
 from pymongo import Connection
 
-from helpers import int_or_default, jsonify, loads
+from helpers import int_or_default, jsonify
 
 from bottle import Bottle, route, run, request, response, abort, error
 
@@ -76,8 +76,8 @@ class Kule(object):
                         "objects": objects})
 
     def get_bundler(self, collection):
-        return getattr(self, "build_%s_bundle" % collection.name,
-                       self.build_bundle)
+        method_name = "build_%s_bundle" % collection.name
+        return getattr(self, method_name, self.build_bundle)
 
     def build_bundle(self, data):
         return data
