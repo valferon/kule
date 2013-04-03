@@ -1,9 +1,10 @@
+import json
 from functools import partial
 
 from bson import ObjectId
 from pymongo import Connection
 
-from helpers import int_or_default, jsonify
+from helpers import int_or_default, jsonify, loads
 
 from bottle import Bottle, route, run, request, response, abort, error
 
@@ -51,11 +52,16 @@ class Kule(object):
         response.status = 201
         return jsonify({"_id": inserted})
 
+    def get_query(self):
+        query = request.GET.get("query")
+        return json.loads(query) if query else {}
+
     def get_list(self, collection):
         collection = self.get_collection(collection)
         limit = int_or_default(request.query.limit, 20)
         offset = int_or_default(request.query.offset, 0)
-        cursor = collection.find()
+        query = self.get_query()
+        cursor = collection.find(query)
 
         meta = {
             "limit": limit,
