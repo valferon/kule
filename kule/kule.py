@@ -26,7 +26,7 @@ class Kule(object):
     def get_detail(self, collection, pk):
         cursor = self.get_collection(collection)
         data = cursor.find_one({"_id": ObjectId(pk)}) or abort(404)
-        return jsonify(self.get_bundler(collection)(data))
+        return jsonify(self.get_bundler(cursor)(data))
 
     def put_detail(self, collection, pk):
         collection = self.get_collection(collection)
@@ -156,4 +156,4 @@ if __name__ == "__main__":
         database=options.database,
         collections=collections
     )
-    run(host=host, port=port, debug=True, app=kule.get_bottle_app())
+    run(host=host, port=port, app=kule.get_bottle_app())

@@ -14,12 +14,14 @@ class KuleTests(unittest.TestCase):
     """
     Functionality tests for kule.
     """
-
     def setUp(self):
         self.kule = Kule(database="kule_test",
                          collections=["documents"])
         self.app = TestApp(self.kule.get_bottle_app())
         self.collection = self.kule.get_collection("documents")
+
+    def tearDown(self):
+        self.collection.remove()
 
     def test_empty_response(self):
         response = self.app.get("/documents")
@@ -52,8 +54,11 @@ class KuleTests(unittest.TestCase):
         record = self.collection.find_one(query)
         self.assertEqual(record.get("foo"), "bar")
 
-    def tearDown(self):
-        self.collection.remove()
-
+    def test_get_detail(self):
+        object_id = str(self.collection.insert({"foo": "bar"}))
+        response = self.app.get("/documents/%s" % object_id)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(response.json, {'_id': object_id,
+                                         'foo': 'bar'})
 
 unittest.main()
