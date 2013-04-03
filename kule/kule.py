@@ -48,7 +48,7 @@ class Kule(object):
 
     def post_list(self, collection):
         collection = self.get_collection(collection)
-        collection.insert(request.json)
+        inserted = collection.insert(request.json)
         response.status = 201
         return jsonify({"_id": inserted})
 
@@ -67,7 +67,7 @@ class Kule(object):
             "limit": limit,
             "offset": offset,
             "total_count": cursor.count(),
-            }
+        }
 
         objects = cursor.skip(offset).limit(limit)
         objects = map(self.get_bundler(collection), objects)
@@ -90,7 +90,7 @@ class Kule(object):
             405: partial(self.error, "Method Not Allowed."),
             403: partial(self.error, "Forbidden."),
             400: partial(self.error, "Bad request."),
-            }
+        }
 
     def dispatch_views(self):
         for method in ("get", "post", "put", "patch", "delete"):
@@ -112,10 +112,14 @@ class Kule(object):
                     self.app.route('/%s/:id' % collection, method=method)(
                         detail_view)
 
+    def after_request(self):
+        response["content_type"] = "application/json"
+
     def get_bottle_app(self):
         self.app = Bottle()
         self.dispatch_views()
         self.app.error_handler = self.get_error_handler()
+        self.app.hook('after_request')(self.after_request)
         return self.app
 
     def not_implemented(self, *args, **kwargs):
@@ -136,10 +140,10 @@ if __name__ == "__main__":
                       help="MongoDB port")
     parser.add_option("-d", "--database", dest="database",
                       help="MongoDB database name")
-    parser.add_option("-c", "--collections", default="", dest="collections",
+    parser.add_option("-c", "--collections", dest="collections",
                       help="Comma-separated collections.")
     options, args = parser.parse_args()
-    collections = options.collections.split(",")
+    collections = (options.collections or "").split(",")
     database = options.database
     if not database:
         parser.error("MongoDB database not given.")
@@ -152,4 +156,4 @@ if __name__ == "__main__":
         database=options.database,
         collections=collections
     )
-    run(host=host, port=port, app=kule.get_bottle_app())
+    run(host=host, port=port, debug=True, app=kule.get_bottle_app())
