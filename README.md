@@ -9,7 +9,9 @@ Kule is a REST interface for MongoDB. You can use kule as a temporary backend fo
 
 ### Usage
 
-    python -m kule --database foo --collections users,documents
+```sh
+python -m kule --database foo --collections users,documents
+```
 
 That's all. 
 
