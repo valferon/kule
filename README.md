@@ -80,6 +80,6 @@ class MyKule(Kule):
 #### Starting app
 
 ```python
-from bottle import run
-run(app=MyKule(database="foo").get_bottle_app())
+kule = MyKule(database="foo")
+kule.run()
 ```
