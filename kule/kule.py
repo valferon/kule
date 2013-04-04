@@ -116,9 +116,9 @@ class Kule(object):
 
             # magical views
             for collection in self.collections or []:
-                detail_view = getattr(self, "%s_%s_detail" % (
-                    method, collection), None)
                 list_view = getattr(self, "%s_%s_list" % (
+                    method, collection), None)
+                detail_view = getattr(self, "%s_%s_detail" % (
                     method, collection), None)
                 if list_view:
                     self.app.route('/%s' % collection, method=method)(
@@ -158,7 +158,6 @@ class Kule(object):
 
 if __name__ == "__main__":
     from optparse import OptionParser
-
     parser = OptionParser()
     parser.add_option("--bind", dest="address",
                       help="Binds an address to kule")
