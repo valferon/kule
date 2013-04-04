@@ -1,6 +1,6 @@
 ### Simple REST Interface for MongoDB.
 
-Kule is a REST interface for MongoDB that allows you to create simple REST APIs. You can use kule as a temporary backend for your backend needed apps.
+Kule is a REST interface for MongoDB. You can use kule as a temporary backend for your backend needed apps.
 
 ### Requirements
 
