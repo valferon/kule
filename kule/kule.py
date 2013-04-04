@@ -10,25 +10,30 @@ from bottle import Bottle, route, run, request, response, abort, error
 
 
 class Kule(object):
+    """Wraps bottle app."""
     def __init__(self, database=None, host=None, port=None,
                  collections=None):
         self.connection = self.connect(database, host, port)
         self.collections = collections
 
     def connect(self, database, host=None, port=None):
+        """Connects to the MongoDB"""
         return Connection(host=host, port=port)[database]
 
     def get_collection(self, collection):
+        """Returns the given collection if it permitted"""
         if self.collections and collection not in self.collections:
             abort(403)
         return self.connection[collection]
 
     def get_detail(self, collection, pk):
+        """Returns a single document."""
         cursor = self.get_collection(collection)
         data = cursor.find_one({"_id": ObjectId(pk)}) or abort(404)
         return jsonify(self.get_bundler(cursor)(data))
 
     def put_detail(self, collection, pk):
+        """Updates whole document."""
         collection = self.get_collection(collection)
         collection.update({"_id": ObjectId(pk)},
                           request.json)
@@ -36,6 +41,7 @@ class Kule(object):
         return jsonify(request.json)
 
     def patch_detail(self, collection, pk):
+        """Updates specific parts of the document."""
         collection = self.get_collection(collection)
         collection.update({"_id": ObjectId(pk)},
                           {"$set": request.json})
@@ -43,21 +49,20 @@ class Kule(object):
         return self.get_detail(collection.name, str(pk))
 
     def delete_detail(self, collection, pk):
+        """Deletes a single document"""
         collection = self.get_collection(collection)
         collection.remove({"_id": ObjectId(pk)})
         response.status = 204
 
     def post_list(self, collection):
+        """Creates new document"""
         collection = self.get_collection(collection)
         inserted = collection.insert(request.json)
         response.status = 201
         return jsonify({"_id": inserted})
 
-    def get_query(self):
-        query = request.GET.get("query")
-        return json.loads(query) if query else {}
-
     def get_list(self, collection):
+        """Returns paginated objects."""
         collection = self.get_collection(collection)
         limit = int_or_default(request.query.limit, 20)
         offset = int_or_default(request.query.offset, 0)
@@ -76,14 +81,22 @@ class Kule(object):
         return jsonify({"meta": meta,
                         "objects": objects})
 
+    def get_query(self):
+        """Loads the given json-encoded query."""
+        query = request.GET.get("query")
+        return json.loads(query) if query else {}
+
     def get_bundler(self, collection):
+        """Returns a bundler function for collection"""
         method_name = "build_%s_bundle" % collection.name
         return getattr(self, method_name, self.build_bundle)
 
     def build_bundle(self, data):
+        """Dummy bundler"""
         return data
 
     def get_error_handler(self):
+        """Customized errors"""
         return {
             500: partial(self.error, "Internal Server Error."),
             404: partial(self.error, "Document Not Found."),
@@ -94,6 +107,7 @@ class Kule(object):
         }
 
     def dispatch_views(self):
+        """Routes bottle app. Also determines the magical views."""
         for method in ("get", "post", "put", "patch", "delete"):
             self.app.route('/:collection', method=method)(
                 getattr(self, "%s_list" % method, self.not_implemented))
@@ -114,9 +128,11 @@ class Kule(object):
                         detail_view)
 
     def after_request(self):
+        """A bottle hook for json responses."""
         response["content_type"] = "application/json"
 
     def get_bottle_app(self):
+        """Returns bottle instance"""
         self.app = Bottle()
         self.dispatch_views()
         self.app.error_handler = self.get_error_handler()
@@ -124,9 +140,11 @@ class Kule(object):
         return self.app
 
     def not_implemented(self, *args, **kwargs):
+        """Returns not implemented status."""
         abort(501)
 
     def error(self, message, error):
+        """Returns the error response."""
         return jsonify({"error": error.status_code,
                         "message": message})
 
