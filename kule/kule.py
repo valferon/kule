@@ -4,7 +4,7 @@ from functools import partial
 from bson import ObjectId
 from pymongo import Connection
 
-from .helpers import int_or_default, jsonify
+from helpers import int_or_default, jsonify
 
 from bottle import Bottle, route, run, request, response, abort, error
 
