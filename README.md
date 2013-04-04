@@ -84,7 +84,7 @@ mykule = MyKule(database="foo")
 mykule.run()
 ```
 
-### Backbone Example
+### Using with Backbone.js
 
 You have to override the parse method of collections. Because models listing
 on `objects` key.
@@ -103,4 +103,8 @@ var Documents = Backbone.Collection.extend({
     model: Document,
     url: "/documents"
 });
+
+// lets play
+var document = new Document({"title": "hello"});
+document.save()
 ```
