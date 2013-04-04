@@ -156,7 +156,7 @@ class Kule(object):
         run(*args, **kwargs)
 
 
-if __name__ == "__main__":
+def main():
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("--bind", dest="address",
@@ -184,3 +184,6 @@ if __name__ == "__main__":
         collections=collections
     )
     run(host=host, port=port, app=kule.get_bottle_app())
+
+if __name__ == "__main__":
+    main()
