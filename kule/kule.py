@@ -150,7 +150,7 @@ if __name__ == "__main__":
     database = options.database
     if not database:
         parser.error("MongoDB database not given.")
-    host, port = (options.address or 'localhost'), 8080
+    host, port = (options.address or 'localhost'), 8000
     if ':' in host:
         host, port = host.rsplit(':', 1)
     kule = Kule(
