@@ -91,20 +91,21 @@ class KuleTests(unittest.TestCase):
 
     def test_magical_methods(self):
         class MyKule(Kule):
-            def get_foo_list(self):
+            def get_documents_list(self):
                 return {"foo": "bar"}
-        kule = MyKule(database="kule_test", collections=["foo"])
+        kule = MyKule(database="kule_test", collections=["documents"])
         app = TestApp(kule.get_bottle_app())
-        self.assertEqual(app.get("/foo").json, {"foo": "bar"})
+        self.assertEqual(app.get("/documents").json, {"foo": "bar"})
 
     def test_bundler(self):
         class MyKule(Kule):
-            def build_foo_bundle(self, document):
+            def build_documents_bundle(self, document):
                 return {"_title": document.get("title")}
-        kule = MyKule(database="kule_test", collections=["foo"])
+        kule = MyKule(database="kule_test", collections=["documents"])
         app = TestApp(kule.get_bottle_app())
-        object_id = kule.get_collection("foo").insert({"title": "bar"})
-        self.assertEqual(app.get("/foo/%s" % object_id).json, {"_title": "bar"})
+        object_id = kule.get_collection("documents").insert({"title": "bar"})
+        result = app.get("/documents/%s" % object_id).json
+        self.assertEqual(result ,{"_title": "bar"})
 
 
 unittest.main()
