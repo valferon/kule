@@ -82,5 +82,12 @@ class KuleTests(unittest.TestCase):
                                   'foo': 'bar',
                                   'bar': 'foo'})
 
+    def test_delete_detail(self):
+        object_id = self.collection.insert({"foo": "bar"})
+        response = self.app.delete("/documents/%s" % object_id)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(0, self.collection.find(
+            {"_id": object_id}).count())
+
 
 unittest.main()
