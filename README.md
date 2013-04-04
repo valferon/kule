@@ -16,7 +16,7 @@ That's all.
 ![Kule](http://i.imgur.com/OGeijqr.png)
 
 
-Now you can iteract with your API. 
+Now you can interact with your API.
 
 
 | Method        | Path          |           Action              |
