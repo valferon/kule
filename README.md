@@ -39,7 +39,7 @@ For example, you can provide authentication method.
 
 #### Example
 
-You can override an existing method.
+You can override an existing endpoint.
 
 ```python
 from kule import Kule
