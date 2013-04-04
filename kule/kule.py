@@ -132,7 +132,9 @@ class Kule(object):
 
     def run(self, *args, **kwargs):
         """Shortcut method for running kule"""
-        kwargs.update(app=self.get_bottle_app())
+        kwargs.update({
+            app: self.get_bottle_app()
+        })
         run(*args, **kwargs)
 
 
