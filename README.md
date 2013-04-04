@@ -5,7 +5,7 @@ Kule is a REST interface for MongoDB. You can use kule as a temporary backend fo
 ### Requirements
 
  - Bottle
- - pymongo
+ - Pymongo
 
 ### Usage
 
@@ -80,6 +80,6 @@ class MyKule(Kule):
 #### Starting app
 
 ```python
-kule = MyKule(database="foo")
-kule.run()
+mykule = MyKule(database="foo")
+mykule.run()
 ```
