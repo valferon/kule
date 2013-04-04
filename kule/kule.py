@@ -4,7 +4,7 @@ from functools import partial
 from bson import ObjectId
 from pymongo import Connection
 
-from helpers import int_or_default, jsonify
+from .helpers import int_or_default, jsonify
 
 from bottle import Bottle, route, run, request, response, abort, error
 
@@ -131,7 +131,8 @@ class Kule(object):
                         "message": message})
 
     def run(self, *args, **kwargs):
-        """shortcut method for running kule"""
+        """Shortcut method for running kule"""
+        kwargs.update(app=self.get_bottle_app())
         run(*args, **kwargs)
 
 
