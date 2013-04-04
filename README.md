@@ -105,6 +105,6 @@ var Documents = Backbone.Collection.extend({
 });
 
 // lets play
-var document = new Document({"title": "hello"});
-document.save()
+var _document = new Document({"title": "hello"});
+_document.save()
 ```
