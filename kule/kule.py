@@ -130,6 +130,10 @@ class Kule(object):
         return jsonify({"error": error.status_code,
                         "message": message})
 
+    def run(self, *args, **kwargs):
+        """shortcut method for running kule"""
+        run(*args, **kwargs)
+
 
 if __name__ == "__main__":
     from optparse import OptionParser
