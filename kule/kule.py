@@ -32,6 +32,7 @@ class Kule(object):
         collection = self.get_collection(collection)
         collection.update({"_id": ObjectId(pk)},
                           request.json)
+        response.status = 202
         return jsonify(request.json)
 
     def patch_detail(self, collection, pk):
@@ -39,7 +40,7 @@ class Kule(object):
         collection.update({"_id": ObjectId(pk)},
                           {"$set": request.json})
         response.status = 202
-        return get_document(collection, pk)
+        return self.get_detail(collection.name, str(pk))
 
     def delete_detail(self, collection, pk):
         collection = self.get_collection(collection)
@@ -129,8 +130,10 @@ class Kule(object):
         return jsonify({"error": error.status_code,
                         "message": message})
 
+
 if __name__ == "__main__":
     from optparse import OptionParser
+
     parser = OptionParser()
     parser.add_option("--bind", dest="address",
                       help="Binds an address to kule")

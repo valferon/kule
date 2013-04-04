@@ -61,4 +61,26 @@ class KuleTests(unittest.TestCase):
         self.assertEqual(response.json, {'_id': object_id,
                                          'foo': 'bar'})
 
+    def test_put_detail(self):
+        object_id = self.collection.insert({"foo": "bar"})
+        response = self.app.put("/documents/%s" % object_id,
+                                json.dumps({"bar": "foo"}),
+                                content_type="application/json")
+        self.assertEqual(response.status_code, 202)
+        record = self.collection.find_one({"_id": object_id})
+        self.assertEqual(record, {'_id': object_id,
+                                  'bar': 'foo'})
+
+    def test_patch_detail(self):
+        object_id = self.collection.insert({"foo": "bar"})
+        response = self.app.patch("/documents/%s" % object_id,
+                                  json.dumps({"bar": "foo"}),
+                                  content_type="application/json")
+        self.assertEqual(response.status_code, 202)
+        record = self.collection.find_one({"_id": object_id})
+        self.assertEqual(record, {'_id': object_id,
+                                  'foo': 'bar',
+                                  'bar': 'foo'})
+
+
 unittest.main()
