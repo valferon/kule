@@ -91,7 +91,7 @@ on `objects` key.
 
 ```javascript
 <script type="text/javascript">
-    Backbone.Collection.prototype.parse = function( data ) {
+    Backbone.Collection.prototype.parse = function(data) {
         return data.objects ? data.objects : data;
     };
 
@@ -103,6 +103,6 @@ on `objects` key.
     var Documents = Backbone.Collection.extend({
         model: Document,
         url: "/documents"
-    })
+    });
 </script>
 ```
