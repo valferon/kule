@@ -90,19 +90,17 @@ You have to override the parse method of collections. Because models listing
 on `objects` key.
 
 ```javascript
-<script type="text/javascript">
-    Backbone.Collection.prototype.parse = function(data) {
-        return data.objects ? data.objects : data;
-    };
+Backbone.Collection.prototype.parse = function(data) {
+    return data.objects ? data.objects : data;
+};
 
-    // examples
-    var Document = Backbone.Model.extend({
-        urlRoot: "/documents",
-        idAttribute: "_id"
-    });
-    var Documents = Backbone.Collection.extend({
-        model: Document,
-        url: "/documents"
-    });
-</script>
+// examples
+var Document = Backbone.Model.extend({
+    urlRoot: "/documents",
+    idAttribute: "_id"
+});
+var Documents = Backbone.Collection.extend({
+    model: Document,
+    url: "/documents"
+});
 ```
