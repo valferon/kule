@@ -7,6 +7,12 @@ Kule is a REST interface for MongoDB. You can use kule as a temporary backend fo
  - Bottle
  - Pymongo
 
+### Installation
+
+```sh
+pip install git+git://github.com/fatiherikli/kule.git
+```
+
 ### Usage
 
 ```sh
