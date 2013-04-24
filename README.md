@@ -114,3 +114,8 @@ var Documents = Backbone.Collection.extend({
 var _document = new Document({"title": "hello"});
 _document.save()
 ```
+
+<p align="center">
+  <img src="http://i37.tinypic.com/mhfs5i.jpg" />
+</p>
+
