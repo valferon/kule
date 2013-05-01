@@ -11,6 +11,7 @@ from bottle import Bottle, route, run, request, response, abort, error
 
 class Kule(object):
     """Wraps bottle app."""
+
     def __init__(self, database=None, host=None, port=None,
                  collections=None):
         self.connection = self.connect(database, host, port)
@@ -95,6 +96,14 @@ class Kule(object):
         """Dummy bundler"""
         return data
 
+    def empty_response(self, *args, **kwargs):
+        """Empty response"""
+
+    # we are returning an empty response for OPTIONS method
+    # it's required for enabling CORS.
+    options_list = empty_response
+    options_detail = empty_response
+
     def get_error_handler(self):
         """Customized errors"""
         return {
@@ -108,7 +117,7 @@ class Kule(object):
 
     def dispatch_views(self):
         """Routes bottle app. Also determines the magical views."""
-        for method in ("get", "post", "put", "patch", "delete"):
+        for method in ("get", "post", "put", "patch", "delete", "options"):
             self.app.route('/:collection', method=method)(
                 getattr(self, "%s_list" % method, self.not_implemented))
             self.app.route('/:collection/:pk', method=method)(
@@ -130,13 +139,18 @@ class Kule(object):
     def after_request(self):
         """A bottle hook for json responses."""
         response["content_type"] = "application/json"
+        methods = 'PUT, GET, POST, DELETE, OPTIONS'
+        headers = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = methods
+        response.headers['Access-Control-Allow-Headers'] = headers
 
     def get_bottle_app(self):
         """Returns bottle instance"""
         self.app = Bottle()
         self.dispatch_views()
-        self.app.error_handler = self.get_error_handler()
         self.app.hook('after_request')(self.after_request)
+        self.app.error_handler = self.get_error_handler()
         return self.app
 
     def not_implemented(self, *args, **kwargs):
