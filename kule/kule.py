@@ -98,12 +98,12 @@ class Kule(object):
     def get_error_handler(self):
         """Customized errors"""
         return {
-            500: partial(self.error, "Internal Server Error."),
-            404: partial(self.error, "Document Not Found."),
-            501: partial(self.error, "Not Implemented."),
-            405: partial(self.error, "Method Not Allowed."),
-            403: partial(self.error, "Forbidden."),
-            400: partial(self.error, "Bad request."),
+            500: partial(self.error, message="Internal Server Error."),
+            404: partial(self.error, message="Document Not Found."),
+            501: partial(self.error, message="Not Implemented."),
+            405: partial(self.error, message="Method Not Allowed."),
+            403: partial(self.error, message="Forbidden."),
+            400: self.error,
         }
 
     def dispatch_views(self):
@@ -143,10 +143,10 @@ class Kule(object):
         """Returns not implemented status."""
         abort(501)
 
-    def error(self, message, error):
+    def error(self, error, message=None):
         """Returns the error response."""
         return jsonify({"error": error.status_code,
-                        "message": message})
+                        "message": error.body or message})
 
     def run(self, *args, **kwargs):
         """Shortcut method for running kule"""
@@ -167,6 +167,8 @@ def main():
                       help="MongoDB database name")
     parser.add_option("-c", "--collections", dest="collections",
                       help="Comma-separated collections.")
+    parser.add_option("-k", "--klass", dest="klass",
+                      help="Kule class")
     options, args = parser.parse_args()
     collections = (options.collections or "").split(",")
     database = options.database
@@ -175,7 +177,15 @@ def main():
     host, port = (options.address or 'localhost'), 8000
     if ':' in host:
         host, port = host.rsplit(':', 1)
-    kule = Kule(
+
+    try:
+        klass = __import__(options.klass, fromlist=['kule']).kule
+    except AttributeError:
+        raise ImportError('Bad kule module.')
+    except TypeError:
+        klass = Kule
+
+    kule = klass(
         host=options.mongodb_host,
         port=options.mongodb_port,
         database=options.database,
