@@ -1,8 +1,6 @@
 import hashlib
 import uuid
 
-import bottle
-
 from kule import Kule, jsonify, request, response, abort
 
 
@@ -51,8 +49,8 @@ class KuleWithAuth(Kule):
     def dispatch_views(self):
         super(KuleWithAuth, self).dispatch_views()
         self.app.route('/sessions', method='post')(self.authenticate)
-        self.app.route('/users', method=['post'])(self.register)
         self.app.route('/sessions', method='options')(self.empty_response)
+        self.app.route('/users', method='post')(self.register)
         self.app.route('/users', method='options')(self.empty_response)
 
 kule = KuleWithAuth
