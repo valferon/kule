@@ -36,8 +36,11 @@ class Kule(object):
     def put_detail(self, collection, pk):
         """Updates whole document."""
         collection = self.get_collection(collection)
-        collection.update({"_id": ObjectId(pk)},
-                          request.json)
+        if '_id' in request.json:
+            # we are ignoring id fields of bundle,
+            # because _id field is immutable
+            del request.json['_id']
+        collection.update({"_id": ObjectId(pk)}, request.json)
         response.status = 202
         return jsonify(request.json)
 
@@ -139,7 +142,7 @@ class Kule(object):
     def after_request(self):
         """A bottle hook for json responses."""
         response["content_type"] = "application/json"
-        methods = 'PUT, GET, POST, DELETE, OPTIONS'
+        methods = 'PUT, PATCH, GET, POST, DELETE, OPTIONS'
         headers = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = methods
