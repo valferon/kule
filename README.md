@@ -55,7 +55,7 @@ class MyKule(Kule):
         return self.not_implemented()
 ```
 
-#### get_foo_list, put_foo_detail ...
+#### Magical method names ...
 
 You can override specific endpoint with kule's magical methods.
 
@@ -67,7 +67,7 @@ class MyKule(Kule):
         return ["merhaba", "hello", "hola"]
 ```
 
-#### build_foo_bundle
+#### Building custom bundle
 
 Also there is a way to build customized bundles.
 
@@ -90,7 +90,7 @@ mykule = MyKule(database="foo")
 mykule.run()
 ```
 
-### Using with Backbone.js
+#### Using with Backbone.js
 
 You have to override the parse method of collections. Because models listing
 on `objects` key.
@@ -116,6 +116,7 @@ _document.save()
 ```
 
 <p align="center">
+  <br />
   <img src="http://i37.tinypic.com/mhfs5i.jpg" />
 </p>
 
