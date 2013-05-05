@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='Kule',
-      version='0.2',
+      version='0.3',
       description='REST Interface for MongoDB',
       author='Fatih Erikli',
       author_email='fatiherikli@gmail.com',
