@@ -77,10 +77,8 @@ from kule import Kule
 class MyKule(Kule):
     def build_users_bundle(self, user):
         first_name, last_name = user.get("full_name").split()
-        return {
-            "first_name": first_name,
-            "last_name": last_name
-        }
+        return {"first_name": first_name, 
+                "last_name": last_name}
 ```
 
 #### Starting app
@@ -102,21 +100,19 @@ Backbone.Collection.prototype.parse = function(data) {
 
 // examples
 var Document = Backbone.Model.extend({
-    urlRoot: "/documents",
+    urlRoot: "http://localhost:8000/documents", // Supports CORS
     idAttribute: "_id"
 });
 var Documents = Backbone.Collection.extend({
     model: Document,
-    url: "/documents"
+    url: "http://localhost:8000/documents"
 });
 
 // lets play
 var _document = new Document({"title": "hello"});
 _document.save()
+
+_document.on('reset', function () {
+    console.log(_document.id);
+})
 ```
-
-<p align="center">
-  <br />
-  <img src="http://i37.tinypic.com/mhfs5i.jpg" />
-</p>
-
