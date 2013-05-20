@@ -10,7 +10,7 @@ Kule is a REST interface for MongoDB. You can use kule as a temporary backend fo
 ### Installation
 
 ```sh
-pip install git+git://github.com/fatiherikli/kule.git
+pip install kule
 ```
 
 ### Usage
