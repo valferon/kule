@@ -6,7 +6,10 @@ setup(name='Kule',
       author='Fatih Erikli',
       author_email='fatiherikli@gmail.com',
       url='https://github.com/fatiherikli/kule',
-      packages=['kule'],
+      packages=[
+            'kule',
+            'kule.contrib'
+      ],
       install_requires = [
           'bottle==0.11.6',
           'pymongo==2.5',
