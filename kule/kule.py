@@ -7,7 +7,7 @@ from pymongo import Connection
 from helpers import int_or_default, jsonify
 
 from bottle import Bottle, route, run, request, response, abort, error
-
+from bson.json_util import loads as bson_loads
 
 class Kule(object):
     """Wraps bottle app."""
@@ -71,7 +71,8 @@ class Kule(object):
         limit = int_or_default(request.query.limit, 20)
         offset = int_or_default(request.query.offset, 0)
         query = self.get_query()
-        cursor = collection.find(query)
+        fields = self.get_fields()
+        cursor = collection.find(query, fields=fields)
 
         meta = {
             "limit": limit,
@@ -88,7 +89,12 @@ class Kule(object):
     def get_query(self):
         """Loads the given json-encoded query."""
         query = request.GET.get("query")
-        return json.loads(query) if query else {}
+        return bson_loads(query) if query else {}
+
+    def get_fields(self):
+        """Loads the given json-encoded fields."""
+        fields = request.GET.get("fields")
+        return json.loads(fields) if fields else None
 
     def get_bundler(self, collection):
         """Returns a bundler function for collection"""
