@@ -121,11 +121,6 @@ class Kule(object):
     def dispatch_views(self):
         """Routes bottle app. Also determines the magical views."""
         for method in ("get", "post", "put", "patch", "delete", "options"):
-            self.app.route('/:collection', method=method)(
-                getattr(self, "%s_list" % method, self.not_implemented))
-            self.app.route('/:collection/:pk', method=method)(
-                getattr(self, "%s_detail" % method, self.not_implemented))
-
             # magical views
             for collection in self.collections or []:
                 list_view = getattr(self, "%s_%s_list" % (
@@ -138,6 +133,11 @@ class Kule(object):
                 if detail_view:
                     self.app.route('/%s/:id' % collection, method=method)(
                         detail_view)
+
+            self.app.route('/:collection', method=method)(
+                getattr(self, "%s_list" % method, self.not_implemented))
+            self.app.route('/:collection/:pk', method=method)(
+                getattr(self, "%s_detail" % method, self.not_implemented))
 
     def after_request(self):
         """A bottle hook for json responses."""
