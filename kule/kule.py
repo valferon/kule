@@ -77,7 +77,7 @@ class Kule(object):
         else:
             # bad request
             response.status = 400
-            jsonify({"error": "unverified json request"})
+            return jsonify({"error": "unverified json request"})
         return jsonify({"_id": inserted})
 
     def get_list(self, collection):
