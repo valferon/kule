@@ -1,3 +1,5 @@
+import logging
+import os
 import json
 from functools import partial
 
@@ -6,8 +8,16 @@ from pymongo import Connection
 
 from helpers import int_or_default, jsonify
 
-from bottle import Bottle, route, run, request, response, abort, error
+from bottle import Bottle, run, request, response, abort
 from bson.json_util import loads as bson_loads
+
+logging.basicConfig()
+
+
+def verify(json):
+    """verify a json message"""
+    return json.keys() > 3
+
 
 class Kule(object):
     """Wraps bottle app."""
@@ -61,8 +71,13 @@ class Kule(object):
     def post_list(self, collection):
         """Creates new document"""
         collection = self.get_collection(collection)
-        inserted = collection.insert(request.json)
-        response.status = 201
+        if verify(request.json):
+            inserted = collection.insert(request.json)
+            response.status = 201
+        else:
+            # bad request
+            response.status = 400
+            jsonify({"error": "unverified json request"})
         return jsonify({"_id": inserted})
 
     def get_list(self, collection):
@@ -176,6 +191,20 @@ class Kule(object):
         kwargs.setdefault("app", self.get_bottle_app())
         run(*args, **kwargs)
 
+def make_app(*args, **kwargs):
+    """create a wsgi app and loads settings from environment"""
+
+    logging.info("%s %s", args, kwargs)
+    klass = Kule
+    kule = klass(
+        host=os.environ.get('mongodb_host', 'localhost'),
+        port=int(os.environ.get('mongodb_port', '27017')),
+        database=os.environ.get('mongodb_database', 'test'),
+        collections=os.environ.get('mongodb_collections', "").split(",")
+    )
+    app = kule.get_bottle_app()
+    return app
+app = make_app()
 
 def main():
     from optparse import OptionParser
