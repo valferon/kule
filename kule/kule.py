@@ -23,6 +23,11 @@ formatters = collections.defaultdict(lambda: jsonify, {
     '.csv': csvify
 })
 
+content_types = collections.defaultdict(lambda: 'application/json', {
+    '.json': 'application/json',
+    '.csv': 'text/csv'
+})
+
 class Kule(object):
     """Wraps bottle app."""
 
@@ -102,6 +107,8 @@ class Kule(object):
         objects = cursor.skip(offset).limit(limit)
         objects = map(self.get_bundler(collection), objects)
         formatter = formatters[format]
+        content_type = content_types[format]
+        response["content_type"] = content_type
         logging.warn(formatter, objects)
         return formatter({
             "meta": meta,
@@ -169,7 +176,7 @@ class Kule(object):
 
     def after_request(self):
         """A bottle hook for json responses."""
-        response["content_type"] = "application/json"
+        response.content_type = response.content_type or "application/json"
         methods = 'PUT, PATCH, GET, POST, DELETE, OPTIONS'
         headers = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
         response.headers['Access-Control-Allow-Origin'] = '*'
