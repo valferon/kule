@@ -7,11 +7,16 @@ setup(name='Kule',
       author_email='fatiherikli@gmail.com',
       url='https://github.com/fatiherikli/kule',
       packages=[
-            'kule',
-            'kule.contrib'
+          'kule',
+          'kule.contrib'
       ],
       install_requires = [
           'bottle==0.11.6',
           'pymongo==2.5',
-      ]
+      ],
+      entry_points={
+          'console_scripts': [
+              '{0} = kule.commandline:main'.format('kule')
+          ]
+    }
 )

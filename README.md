@@ -88,6 +88,27 @@ mykule = MyKule(database="foo")
 mykule.run()
 ```
 
+#### Examples
+
+```javascript
+url = "http://54.154.187.252/db/measurements?" + "query={
+    "data.geometry": {
+        "$geoWithin": {
+           "$geometry": {
+              "type":"Polygon",
+              "coordinates": [[
+                 [5,52],
+                 [5,52.2],
+                 [6,52.2],
+                 [6,52],
+                 [5,52]
+              ]]
+           }
+        }
+    }
+}"
+"http://54.154.187.252/db/measurements?query={%22data.geometry%22:{%22$geoWithin%22:{%22$geometry%22:{%22type%22:%20%22Polygon%22,%22coordinates%22:[[[5,52],[5,52.2],[6,52.2],[6,52],[5,52]]]}}}}"
+```
 #### Using with Backbone.js
 
 You have to override the parse method of collections. Because models listing
