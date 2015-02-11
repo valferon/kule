@@ -1,1 +1,2 @@
-from kule import *
+from .kule import Kule
+

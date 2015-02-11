@@ -1,12 +1,12 @@
 import logging
-import os
 import json
 from functools import partial
+import collections
 
 from bson import ObjectId
 from pymongo import Connection
 
-from helpers import int_or_default, jsonify
+from helpers import int_or_default, jsonify, csvify
 
 from bottle import Bottle, run, request, response, abort
 from bson.json_util import loads as bson_loads
@@ -18,6 +18,10 @@ def verify(json):
     """verify a json message"""
     return json.keys() > 3
 
+formatters = collections.defaultdict(lambda: jsonify, {
+    '.json': jsonify,
+    '.csv': csvify
+})
 
 class Kule(object):
     """Wraps bottle app."""
@@ -80,7 +84,7 @@ class Kule(object):
             return jsonify({"error": "unverified json request"})
         return jsonify({"_id": inserted})
 
-    def get_list(self, collection):
+    def get_list(self, collection, format='.json'):
         """Returns paginated objects."""
         collection = self.get_collection(collection)
         limit = int_or_default(request.query.limit, 20)
@@ -97,9 +101,12 @@ class Kule(object):
 
         objects = cursor.skip(offset).limit(limit)
         objects = map(self.get_bundler(collection), objects)
-
-        return jsonify({"meta": meta,
-                        "objects": objects})
+        formatter = formatters[format]
+        logging.warn(formatter, objects)
+        return formatter({
+            "meta": meta,
+            "objects": objects
+        })
 
     def get_query(self):
         """Loads the given json-encoded query."""
@@ -155,7 +162,7 @@ class Kule(object):
                     self.app.route('/%s/:id' % collection, method=method)(
                         detail_view)
 
-            self.app.route('/:collection', method=method)(
+            self.app.route('/:collection#\w+#:format#(\.[\w\d]+)?#', method=method)(
                 getattr(self, "%s_list" % method, self.not_implemented))
             self.app.route('/:collection/:pk', method=method)(
                 getattr(self, "%s_detail" % method, self.not_implemented))
@@ -191,59 +198,4 @@ class Kule(object):
         kwargs.setdefault("app", self.get_bottle_app())
         run(*args, **kwargs)
 
-def make_app(*args, **kwargs):
-    """create a wsgi app and loads settings from environment"""
 
-    logging.info("%s %s", args, kwargs)
-    klass = Kule
-    kule = klass(
-        host=os.environ.get('mongodb_host', 'localhost'),
-        port=int(os.environ.get('mongodb_port', '27017')),
-        database=os.environ.get('mongodb_database', 'test'),
-        collections=os.environ.get('mongodb_collections', "").split(",")
-    )
-    app = kule.get_bottle_app()
-    return app
-app = make_app()
-
-def main():
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("--bind", dest="address",
-                      help="Binds an address to kule")
-    parser.add_option("--mongodb-host", dest="mongodb_host",
-                      help="MongoDB host")
-    parser.add_option("--mongodb-port", dest="mongodb_port",
-                      help="MongoDB port")
-    parser.add_option("-d", "--database", dest="database",
-                      help="MongoDB database name")
-    parser.add_option("-c", "--collections", dest="collections",
-                      help="Comma-separated collections.")
-    parser.add_option("-k", "--klass", dest="klass",
-                      help="Kule class")
-    options, args = parser.parse_args()
-    collections = (options.collections or "").split(",")
-    database = options.database
-    if not database:
-        parser.error("MongoDB database not given.")
-    host, port = (options.address or 'localhost'), 8000
-    if ':' in host:
-        host, port = host.rsplit(':', 1)
-
-    try:
-        klass = __import__(options.klass, fromlist=['kule']).kule
-    except AttributeError:
-        raise ImportError('Bad kule module.')
-    except TypeError:
-        klass = Kule
-
-    kule = klass(
-        host=options.mongodb_host,
-        port=options.mongodb_port,
-        database=options.database,
-        collections=collections
-    )
-    run(host=host, port=port, app=kule.get_bottle_app())
-
-if __name__ == "__main__":
-    main()
