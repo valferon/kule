@@ -155,7 +155,9 @@ class Kule(object):
 
     def dispatch_views(self):
         """Routes bottle app. Also determines the magical views."""
-        for method in ("get", "post", "put", "patch", "delete", "options"):
+        # Disable put, patch and delete requests
+        # for method in ("get", "post", "put", "patch", "delete", "options"):
+        for method in ("get", "post", "options"):
             # magical views
             for collection in self.collections or []:
                 list_view = getattr(self, "%s_%s_list" % (
@@ -177,7 +179,9 @@ class Kule(object):
     def after_request(self):
         """A bottle hook for json responses."""
         response.content_type = response.content_type or "application/json"
-        methods = 'PUT, PATCH, GET, POST, DELETE, OPTIONS'
+        # disable patch, put, and delete
+        # methods = 'PUT, PATCH, GET, POST, DELETE, OPTIONS'
+        methods = 'GET, POST, OPTIONS'
         headers = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = methods
