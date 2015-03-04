@@ -109,7 +109,6 @@ class Kule(object):
         formatter = formatters[format]
         content_type = content_types[format]
         response["content_type"] = content_type
-        logging.warn(formatter, objects)
         return formatter({
             "meta": meta,
             "objects": objects
