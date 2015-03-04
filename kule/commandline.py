@@ -24,6 +24,7 @@ def main():
     options, args = parser.parse_args()
     collections = (options.collections or "").split(",")
     database = options.database
+    mongodb_port = int(options.mongodb_port or "27017")
     if not database:
         parser.error("MongoDB database not given.")
     host, port = (options.address or 'localhost'), 8000
@@ -41,7 +42,7 @@ def main():
 
     kule = klass(
         host=options.mongodb_host,
-        port=options.mongodb_port,
+        port=mongodb_port,
         database=options.database,
         collections=collections
     )
