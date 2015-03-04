@@ -76,7 +76,7 @@ class Kule(object):
         collection.remove({"_id": ObjectId(pk)})
         response.status = 204
 
-    def post_list(self, collection):
+    def post_list(self, collection, format='json'):
         """Creates new document"""
         collection = self.get_collection(collection)
         if verify(request.json):
