@@ -13,10 +13,9 @@ from bson.json_util import loads as bson_loads
 
 logging.basicConfig()
 
-
 def verify(json):
     """verify a json message"""
-    return json.keys() > 3
+    return True
 
 formatters = collections.defaultdict(lambda: jsonify, {
     '.json': jsonify,

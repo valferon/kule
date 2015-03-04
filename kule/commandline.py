@@ -30,6 +30,8 @@ def main():
     if ':' in host:
         host, port = host.rsplit(':', 1)
 
+    if options.klass is None:
+        klass = Kule
     try:
         klass = __import__(options.klass, fromlist=['kule']).kule
     except AttributeError:
