@@ -2,7 +2,7 @@ import json
 from functools import partial
 
 from bson import ObjectId
-from pymongo import Connection
+import pymongo
 
 from helpers import int_or_default, jsonify
 
@@ -19,7 +19,7 @@ class Kule(object):
 
     def connect(self, database, host=None, port=None):
         """Connects to the MongoDB"""
-        return Connection(host=host, port=port)[database]
+        return pymongo.MongoClient(host=host, port=port)[database]
 
     def get_collection(self, collection):
         """Returns the given collection if it permitted"""
