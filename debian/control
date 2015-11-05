@@ -1,0 +1,16 @@
+Source: kule
+Maintainer: Val Feron
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), debhelper (>= 7.4.3)
+Standards-Version: 3.9.1
+
+Package: python-kule
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: Mongo HTTP client
+ ####
+ Kule
+ ####
+ kule 0.0.1
+ 5-nov-2015
