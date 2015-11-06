@@ -12,6 +12,6 @@ setup(name='Kule',
       ],
       install_requires = [
           'bottle==0.11.6',
-          'pymongo==2.5',
+          'pymongo>=3.0',
       ]
 )

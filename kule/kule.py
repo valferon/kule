@@ -72,7 +72,7 @@ class Kule(object):
         offset = int_or_default(request.query.offset, 0)
         query = self.get_query()
         fields = self.get_fields()
-        cursor = collection.find(query, fields=fields)
+        cursor = collection.find(query, projection=fields)
 
         meta = {
             "limit": limit,
