@@ -116,3 +116,21 @@ _document.on('reset', function () {
     console.log(_document.id);
 })
 ```
+
+#### Using configuration file
+
+Pass configuration file 
+
+ie : python -m kule -f /etc/kule.conf
+
+Sample config file :
+
+```
+[mongo]
+collections=
+database=
+mongo_host=127.0.0.1
+mongo_port=27017
+listen_address=127.0.0.1
+listen_port=8000
+```
