@@ -207,7 +207,7 @@ def main():
         if ':' in host:
             host, mongodb_port = host.rsplit(':', 1)
             port = int(port)
-        mongodb_host = (options.mongodb_host or 'locahost')
+        mongodb_host = (options.mongodb_host or 'localhost')
         mongodb_port = (options.mongodb_port or 27017)
     else:
         config = ConfigParser.SafeConfigParser()
