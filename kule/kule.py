@@ -1,3 +1,4 @@
+import ConfigParser
 import json
 from functools import partial
 
@@ -192,14 +193,37 @@ def main():
                       help="Comma-separated collections.")
     parser.add_option("-k", "--klass", dest="klass",
                       help="Kule class")
+    parser.add_option("-f", "--config-file", dest="config",
+                      help="Path to config file")
     options, args = parser.parse_args()
-    collections = (options.collections or "").split(",")
-    database = options.database
-    if not database:
-        parser.error("MongoDB database not given.")
-    host, port = (options.address or 'localhost'), 8000
-    if ':' in host:
-        host, port = host.rsplit(':', 1)
+
+    config_file = options.config
+    if not config_file:
+        collections = (options.collections or "").split(",")
+        database = options.database
+        if not database:
+            parser.error("MongoDB database not given.")
+        host, port = (options.address or 'localhost'), 8000
+        if ':' in host:
+            host, mongodb_port = host.rsplit(':', 1)
+            port = int(port)
+        mongodb_host = (options.mongodb_host or 'locahost')
+        mongodb_port = (options.mongodb_port or 27017)
+    else:
+        config = ConfigParser.SafeConfigParser()
+        config.read(config_file)
+        collections = config.get('mongo', 'collections')
+        database = config.get('mongo', 'database')
+        if not database:
+            parser.error("MongoDB database not given.")
+        host = (config.get('mongo', 'listen_address') or 'localhost')
+        port = (config.get('mongo', 'listen_port') or 8000)
+        if ':' in host:
+            host, port = host.rsplit(':', 1)
+            port = int(port)
+        mongodb_host = (config.get('mongo', 'mongo_host') or 'localhost')
+        mongodb_port = (config.get('mongo', 'mongo_port') or 27017)
+
 
     try:
         klass = __import__(options.klass, fromlist=['kule']).kule
@@ -209,9 +233,9 @@ def main():
         klass = Kule
 
     kule = klass(
-        host=options.mongodb_host,
-        port=options.mongodb_port,
-        database=options.database,
+        host=mongodb_host,
+        port=mongodb_port,
+        database=database,
         collections=collections
     )
     run(host=host, port=port, app=kule.get_bottle_app())
